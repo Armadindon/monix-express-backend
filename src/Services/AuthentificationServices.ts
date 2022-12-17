@@ -18,8 +18,8 @@ export const authenticateToken: RequestHandler = (req, res, next) => {
 };
 
 /** Utilitary middleware to use to get user (after the authenticateToken middleware) */
-export const setUser: RequestHandler = (req, res, next) => {
+export const setUser: RequestHandler = async (req, res, next) => {
   if (req.userId == undefined) return res.sendStatus(401);
-  req.user = User.findOne({ where: { id: req.userId } });
+  req.user = await User.findOne({ where: { id: req.userId } });
   next();
 };

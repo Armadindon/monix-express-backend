@@ -1,8 +1,17 @@
 import { Router, json } from "express";
-import { authenticateToken } from "../Services/AuthentificationServices";
+import {
+  authenticateToken,
+  setUser,
+} from "../Services/AuthentificationServices";
 import { User } from "../Model/User";
+import multer from "multer";
+import uuid from "uuid";
+import path from "path";
+import fs from "fs";
+import { v4 as uuidV4 } from "uuid";
 
 const router = Router();
+const upload = multer({ dest: "public/tmp/" });
 
 router.use(json());
 
@@ -55,7 +64,56 @@ router.delete("/:id", authenticateToken, async (req, res, next) => {
   }
   // On delete l'utilisateur
   user.destroy();
-  res.status(200).json({ sucess: true, message: "L'utilisateur a bien été supprimé" });
+  res
+    .status(200)
+    .json({ sucess: true, message: "L'utilisateur a bien été supprimé" });
 });
+
+router.post(
+  "/uploadAvatar",
+  upload.single("avatar"),
+  authenticateToken,
+  setUser,
+  async (req, res, next) => {
+    // TODO: Mettre en place un système de droits
+    const user: User = req.user;
+
+    if (req.file == undefined) {
+      const error = new Error("Image 'avatar' non trouvée");
+      return next(error);
+    }
+
+    const tempPath = req.file.path;
+    const fileNameTarget = uuidV4() + ".png";
+    const targetPath = "public/images/" + fileNameTarget;
+
+    // Si l'utilisateur avait une image, on supprime l'ancienne
+    if (user.avatar) {
+      fs.unlink("public/images/" + user.avatar, (err) => {
+        if (err) return next(err);
+      });
+      await user.update({ avatar: null });
+    }
+
+    if (
+      path.extname(req.file?.originalname as string).toLowerCase() === ".png"
+    ) {
+      fs.rename(tempPath, targetPath, async (err) => {
+        if (err) return next(err);
+        // On récupère l'image de la requete
+        const updatedUser = await user.update({ avatar: fileNameTarget });
+        res.status(200).json({ sucess: true, data: cleanUser(updatedUser) });
+      });
+    } else {
+      fs.unlink(tempPath, (err) => {
+        if (err) return next(err);
+
+        res
+          .status(403)
+          .json({ success: false, error: "Seulement les png sont autorisés" });
+      });
+    }
+  }
+);
 
 export default router;

@@ -30,8 +30,8 @@ History(sequelize);
 sequelize.sync();
 
 // SERVER SETUP
+app.use(express.static('public'));
 app.use("/documentation", swaggerUi.serve, swaggerUi.setup(swaggerConfig));
-
 app.use("/auth", AuthController);
 app.use("/users", UserController);
 
