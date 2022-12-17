@@ -6,9 +6,10 @@ import { Sequelize } from "sequelize";
 import User from "./Model/User";
 import Product from "./Model/Product";
 import History from "./Model/History";
+import AuthController from "./Controllers/AuthController";
+import swaggerConfig from "./config/swagger.json";
 
 /** MODELS IMPORTS */
-
 
 // GENERAL SETUP
 dotenv.config();
@@ -27,11 +28,10 @@ History(sequelize);
 sequelize.sync();
 
 // SERVER SETUP
-app.use(
-  "/",
-  swaggerUi.serve,
-  swaggerUi.setup(YAML.load("./src/config/swagger.yaml"))
-);
+app.use("/documentation", swaggerUi.serve, swaggerUi.setup(swaggerConfig));
+
+app.use("/auth", AuthController);
+
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
