@@ -1,6 +1,17 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  Sequelize,
+} from "sequelize";
 
-export class Product extends Model {
+export class Product extends Model<
+  InferAttributes<Product>,
+  InferCreationAttributes<Product>
+> {
+  declare id: CreationOptional<number>;
   declare name: string;
   declare price: number;
   declare stock: number;
@@ -9,25 +20,15 @@ export class Product extends Model {
 }
 
 export default (sequelize: Sequelize) => {
-  Product.init({
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
+  Product.init(
+    {
+      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      name: { type: DataTypes.STRING, allowNull: false },
+      price: { type: DataTypes.FLOAT, allowNull: false },
+      stock: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+      image: { type: DataTypes.STRING },
+      barcode: { type: DataTypes.STRING },
     },
-    price: {
-      type: DataTypes.FLOAT,
-      allowNull: false
-    },
-    stock: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    },
-    image: {
-      type: DataTypes.STRING,
-    },
-    barcode: {
-      type: DataTypes.STRING,
-    },
-  }, {sequelize})
-}
+    { sequelize }
+  );
+};
