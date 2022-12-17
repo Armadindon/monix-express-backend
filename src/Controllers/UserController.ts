@@ -23,12 +23,27 @@ router.get("/", authenticateToken, async (req, res, next) => {
 router.get("/:id", authenticateToken, async (req, res, next) => {
   // TODO: Mettre en place un système de droits
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
-  console.log(user);
   if (user == null) {
     const error = new Error("User non trouvé");
     return next(error);
   }
   res.status(200).json({ sucess: true, data: cleanUser(user) });
+});
+
+router.put("/:id", authenticateToken, async (req, res, next) => {
+  // TODO: Mettre en place un système de droits
+  const user = await User.findOne({ where: { id: Number(req.params.id) } });
+  if (user == null) {
+    const error = new Error("User non trouvé");
+    return next(error);
+  }
+  // On update l'utilisateur
+  const userToSet = req.body;
+  const updatedUser = await user.update({
+    username: userToSet?.username,
+    email: userToSet?.email,
+  });
+  res.status(200).json({ sucess: true, data: cleanUser(updatedUser) });
 });
 
 export default router;

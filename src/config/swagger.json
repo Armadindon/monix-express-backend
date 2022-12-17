@@ -154,6 +154,50 @@
             }
           }
         }
+      },
+      "put": {
+        "summary": "Update one user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID de l'utilisateur que l'on veut modifier"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserModification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'utilisateur a bien été recupéré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGet"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -242,6 +286,14 @@
           "avatar": { "type": "string" },
           "createdAt": { "type": "string" },
           "updatedAt": { "type": "string" }
+        }
+      },
+      "UserModification": {
+        "type": "object",
+        "required": ["username", "email"],
+        "properties": {
+          "username": { "type": "string" },
+          "email": { "type": "string" }
         }
       },
       "UserGet": {
