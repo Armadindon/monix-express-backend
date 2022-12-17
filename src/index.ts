@@ -7,6 +7,8 @@ import User from "./Model/User";
 import Product from "./Model/Product";
 import History from "./Model/History";
 import AuthController from "./Controllers/AuthController";
+import UserController from "./Controllers/UserController";
+
 import swaggerConfig from "./config/swagger.json";
 
 /** MODELS IMPORTS */
@@ -31,6 +33,7 @@ sequelize.sync();
 app.use("/documentation", swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 
 app.use("/auth", AuthController);
+app.use("/users", UserController);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

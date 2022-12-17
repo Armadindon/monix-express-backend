@@ -16,6 +16,7 @@
     "/auth/login": {
       "post": {
         "summary": "Connecte l'utilisateur",
+        "tags": ["Authentification"],
         "requestBody": {
           "description": "L'utilisateur a créer'",
           "required": true,
@@ -54,6 +55,7 @@
     "/auth/signup": {
       "post": {
         "summary": "Crée un utilisateur",
+        "tags": ["Authentification"],
         "requestBody": {
           "description": "L'utilisateur a créer'",
           "required": true,
@@ -88,9 +90,81 @@
           }
         }
       }
+    },
+    "/users/": {
+      "get": {
+        "summary": "Get all users",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Reception de la liste d'utilisateurs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get one user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID de l'utilisateur dont on veut les détails"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'utilisateur a bien été recupéré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGet"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "apiError": {
         "type": "object",
@@ -146,6 +220,46 @@
               "email": { "type": "string" },
               "token": { "type": "string" }
             }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "email",
+          "balance",
+          "avatar",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": { "type": "number" },
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "balance": { "type": "string" },
+          "avatar": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "UserGet": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/User" }
+        }
+      },
+      "UserList": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/User" }
           }
         }
       }
