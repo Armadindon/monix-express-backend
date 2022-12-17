@@ -46,4 +46,16 @@ router.put("/:id", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: cleanUser(updatedUser) });
 });
 
+router.delete("/:id", authenticateToken, async (req, res, next) => {
+  // TODO: Mettre en place un système de droits
+  const user = await User.findOne({ where: { id: Number(req.params.id) } });
+  if (user == null) {
+    const error = new Error("User non trouvé");
+    return next(error);
+  }
+  // On delete l'utilisateur
+  user.destroy();
+  res.status(200).json({ sucess: true, message: "L'utilisateur a bien été supprimé" });
+});
+
 export default router;

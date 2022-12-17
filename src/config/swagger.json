@@ -9,6 +9,10 @@
     {
       "name": "Authentification",
       "description": "Tout ce qui est lié a l'authentification"
+    },
+    {
+      "name": "Users",
+      "description": "Tout ce qui est lié a la gestion des données utilisateurs"
     }
   ],
 
@@ -94,6 +98,7 @@
     "/users/": {
       "get": {
         "summary": "Get all users",
+        "tags": ["Users"],
         "security": [{ "bearerAuth": [] }],
         "responses": {
           "default": {
@@ -122,6 +127,7 @@
     "/users/{id}": {
       "get": {
         "summary": "Get one user",
+        "tags": ["Users"],
         "parameters": [
           {
             "in": "path",
@@ -157,6 +163,7 @@
       },
       "put": {
         "summary": "Update one user",
+        "tags": ["Users"],
         "parameters": [
           {
             "in": "path",
@@ -188,11 +195,47 @@
             }
           },
           "200": {
-            "description": "L'utilisateur a bien été recupéré",
+            "description": "L'utilisateur a bien été modifié",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserGet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete one user",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID de l'utilisateur que l'on veut modifier"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'utilisateur a bien été supprimé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiMessage"
                 }
               }
             }
@@ -218,6 +261,18 @@
             "type": "boolean"
           },
           "error": {
+            "type": "string"
+          }
+        }
+      },
+      "apiMessage": {
+        "type": "object",
+        "required": ["success", "message"],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
             "type": "string"
           }
         }
