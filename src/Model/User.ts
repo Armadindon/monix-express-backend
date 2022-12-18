@@ -48,7 +48,13 @@ export default (sequelize: Sequelize) => {
           }
         },
         beforeUpdate: async (user) => {
-          if (user.password) {
+          const previousPassword = user.previous().password;
+          // On verifie que le mot de passe a bien changé pour éviter de crypter une deuxième fois le mdp
+          if (
+            user.password &&
+            previousPassword &&
+            user.password !== previousPassword
+          ) {
             const salt = await bcrypt.genSaltSync(10, "a");
             user.password = bcrypt.hashSync(user.password, salt);
           }
