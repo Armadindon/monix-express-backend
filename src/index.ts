@@ -10,6 +10,7 @@ import AuthController from "./Controllers/AuthController";
 import UserController from "./Controllers/UserController";
 
 import swaggerConfig from "./config/swagger.json";
+import { insertDummyData } from "./SetupTestData";
 
 /** MODELS IMPORTS */
 
@@ -28,6 +29,7 @@ User(sequelize);
 Product(sequelize);
 History(sequelize);
 sequelize.sync();
+insertDummyData();
 
 // SERVER SETUP
 app.use(express.static('public'));

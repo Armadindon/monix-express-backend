@@ -286,6 +286,44 @@
           }
         }
       }
+    },
+    "/users/changePassword": {
+      "post": {
+        "summary": "Let the connected user change his own password",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'avatar de l'utilisateur à bien été mis à jour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiMessage"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -412,6 +450,15 @@
             "type": "array",
             "items": { "$ref": "#/components/schemas/User" }
           }
+        }
+      },
+      "ChangePasswordBody": {
+        "type": "object",
+        "required": ["oldPassword", "newPassword", "passwordConfirmation"],
+        "properties": {
+          "oldPassword": { "type": "string" },
+          "newPassword": { "type": "string" },
+          "passwordConfirmation": { "type": "string" }
         }
       }
     }

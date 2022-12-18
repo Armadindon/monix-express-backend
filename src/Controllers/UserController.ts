@@ -116,4 +116,42 @@ router.post(
   }
 );
 
+router.post(
+  "/changePassword",
+  authenticateToken,
+  setUser,
+  async (req, res, next) => {
+    // TODO: Mettre en place un système de droits
+    const user: User = req.user;
+    const { oldPassword, newPassword, passwordConfirmation } = req.body;
+
+    if (newPassword !== passwordConfirmation) {
+      const error = new Error(
+        "Le mot de passe et la confirmation ne correspondent pas"
+      );
+      return next(error);
+    }
+
+    if (oldPassword === newPassword) {
+      const error = new Error(
+        "Le mot de passe n'as pas changé ! Merci de changer de mot de passe"
+      );
+      return next(error);
+    }
+
+    if (!user.validPassword(oldPassword)) {
+      const error = new Error("L'ancien mot de passe n'est pas le bon !");
+      return next(error);
+    }
+    user.update({ password: newPassword });
+    res
+      .status(200)
+      .json({
+        sucess: true,
+        message:
+          "Votre mot de passe a bien changé, vous pouvez vous reconnecter",
+      });
+  }
+);
+
 export default router;
