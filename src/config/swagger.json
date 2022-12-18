@@ -13,6 +13,10 @@
     {
       "name": "Users",
       "description": "Tout ce qui est lié a la gestion des données utilisateurs"
+    },
+    {
+      "name": "Products",
+      "description": "Tout ce qui est lié a la gestion des produits"
     }
   ],
 
@@ -324,6 +328,207 @@
           }
         }
       }
+    },
+    "/products/": {
+      "get": {
+        "summary": "Get all products",
+        "tags": ["Products"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Reception de la liste de produits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "Get one product",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID du produit dont on veut les détails"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Le produit a bien été recupéré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductGet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update one product",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID du produit que l'on veut modifier"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductModification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'utilisateur a bien été modifié",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductGet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete one product",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID du produit que l'on veut modifier"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'utilisateur a bien été supprimé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/uploadImage/{id}": {
+      "post": {
+        "summary": "Upload an avatar for the currently connected user",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID du produit que l'on veut modifier"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'avatar de l'utilisateur à bien été mis à jour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductGet"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -459,6 +664,58 @@
           "oldPassword": { "type": "string" },
           "newPassword": { "type": "string" },
           "passwordConfirmation": { "type": "string" }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "price",
+          "stock",
+          "image",
+          "barcode",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": { "type": "number" },
+          "name": { "type": "string" },
+          "price": { "type": "number" },
+          "stock": { "type": "number" },
+          "image": { "type": "string" },
+          "barcode": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "ProductModification": {
+        "type": "object",
+        "required": ["name", "price", "stock", "barcode"],
+        "properties": {
+          "name": { "type": "string" },
+          "price": { "type": "number" },
+          "stock": { "type": "number" },
+          "barcode": { "type": "string" }
+        }
+      },
+      "ProductGet": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/Product" }
+        }
+      },
+      "ProductList": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          }
         }
       }
     }

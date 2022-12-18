@@ -8,6 +8,8 @@ import Product from "./Model/Product";
 import History from "./Model/History";
 import AuthController from "./Controllers/AuthController";
 import UserController from "./Controllers/UserController";
+import ProductController from "./Controllers/ProductsController";
+
 
 import swaggerConfig from "./config/swagger.json";
 import { insertDummyData } from "./SetupTestData";
@@ -36,6 +38,7 @@ app.use(express.static('public'));
 app.use("/documentation", swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 app.use("/auth", AuthController);
 app.use("/users", UserController);
+app.use("/products", ProductController);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
