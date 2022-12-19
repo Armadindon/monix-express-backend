@@ -21,6 +21,10 @@
     {
       "name": "Balance",
       "description": "Tout ce qui est lié a la gestion des portefeuilles utilisateurs"
+    },
+    {
+      "name": "Historique",
+      "description": "Tout ce qui est lié a l'historique des utilisateurs"
     }
   ],
 
@@ -616,6 +620,183 @@
           }
         }
       }
+    },
+    "/history/": {
+      "get": {
+        "summary": "Get all Hystory entries",
+        "tags": ["Historique"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Reception de la liste de entrée d'historique",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/history/{id}": {
+      "get": {
+        "summary": "Get one History entry",
+        "tags": ["Historique"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID de l'entrée de l'historique dont on veut les détails"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Le produit a bien été recupéré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryGet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update one history",
+        "tags": ["Historique"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID de l'entrée d'historique que l'on veut modifier"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HistoryModification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'utilisateur a bien été modifié",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryGet"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete one product",
+        "tags": ["Historique"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": { "type": "integer" },
+            "required": true,
+            "description": "ID du produit que l'on veut supprimer"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "L'utilisateur a bien été supprimé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/history/myHistory": {
+      "get": {
+        "summary": "Get all Hystory entries for the authentif user",
+        "tags": ["Historique"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Reception de l'historique personnel",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryList"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -802,6 +983,56 @@
           "data": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/Product" }
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "movement",
+          "ProductId",
+          "UserId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": { "type": "number" },
+          "description": { "type": "string" },
+          "movement": { "type": "number" },
+          "ProductId": { "type": "number" },
+          "UserId": { "type": "number" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "HistoryModification": {
+        "type": "object",
+        "required": ["description", "movement", "ProductId", "UserId"],
+        "properties": {
+          "description": { "type": "string" },
+          "movement": { "type": "number" },
+          "ProductId": { "type": "number" },
+          "UserId": { "type": "number" }
+        }
+      },
+      "HistoryGet": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/History" }
+        }
+      },
+      "HistoryList": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/History" }
           }
         }
       }

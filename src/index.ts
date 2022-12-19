@@ -10,7 +10,7 @@ import AuthController from "./Controllers/AuthController";
 import UserController from "./Controllers/UserController";
 import ProductController from "./Controllers/ProductsController";
 import BalanceController from "./Controllers/BalanceController";
-
+import HistoryController from "./Controllers/HistoryController"
 
 import swaggerConfig from "./config/swagger.json";
 import { insertDummyData } from "./SetupTestData";
@@ -40,6 +40,7 @@ app.use("/auth", AuthController);
 app.use("/users", UserController);
 app.use("/products", ProductController);
 app.use("/balance", BalanceController);
+app.use("/history", HistoryController);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
