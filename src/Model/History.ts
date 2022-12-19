@@ -18,16 +18,19 @@ export class History extends Model<
   declare id: CreationOptional<number>;
 
   // User
-  declare userId: NonAttribute<number>;
+  declare UserId: ForeignKey<number>;
   declare user: NonAttribute<User>;
 
   // Product
-  declare productId: NonAttribute<number>;
+  declare ProductId: ForeignKey<number>;
   declare product: NonAttribute<Product>;
 
   declare movement: number;
   declare description: string;
   declare date: Date;
+
+  declare getUser:() => User;
+  declare getProduct:() => Product; 
 }
 
 export default (sequelize: Sequelize) => {

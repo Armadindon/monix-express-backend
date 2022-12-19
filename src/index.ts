@@ -9,6 +9,7 @@ import History from "./Model/History";
 import AuthController from "./Controllers/AuthController";
 import UserController from "./Controllers/UserController";
 import ProductController from "./Controllers/ProductsController";
+import BalanceController from "./Controllers/BalanceController";
 
 
 import swaggerConfig from "./config/swagger.json";
@@ -30,15 +31,15 @@ export const sequelize = new Sequelize({
 User(sequelize);
 Product(sequelize);
 History(sequelize);
-sequelize.sync();
-insertDummyData();
+sequelize.sync({ force: true }).then(() => insertDummyData());
 
 // SERVER SETUP
-app.use(express.static('public'));
+app.use(express.static("public"));
 app.use("/documentation", swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 app.use("/auth", AuthController);
 app.use("/users", UserController);
 app.use("/products", ProductController);
+app.use("/balance", BalanceController);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

@@ -17,6 +17,10 @@
     {
       "name": "Products",
       "description": "Tout ce qui est lié a la gestion des produits"
+    },
+    {
+      "name": "Balance",
+      "description": "Tout ce qui est lié a la gestion des portefeuilles utilisateurs"
     }
   ],
 
@@ -523,6 +527,89 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProductGet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/balance/buy": {
+      "post": {
+        "summary": "Buy a product for the authentified user",
+        "tags": ["Balance"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": { "type": "number" },
+                  "amount": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Le produit a bien été acheté",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/balance/recharge": {
+      "post": {
+        "summary": "Endpoint permettant à l'utilisateur de recharger son portefeuille",
+        "tags": ["Balance"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Le compte a bien été rechargé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGet"
                 }
               }
             }
