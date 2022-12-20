@@ -2,6 +2,7 @@ import { Router, json } from "express";
 import { History } from "../Model/History";
 import {
   authenticateToken,
+  isAdmin,
   setUser,
 } from "../Services/AuthentificationServices";
 import { Product } from "../Model/Product";
@@ -11,15 +12,13 @@ const router = Router();
 
 router.use(json());
 
-router.get("/", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
   const histories = await History.findAll({ include: [Product, User] });
   res.status(200).json({ sucess: true, data: histories });
 });
 
 // TODO: Voir pourquoi ce endpoint doit être mit avant les autres (sinon, c'est le router.get('/:id') qui l'attrape)
 router.get("/myHistory/", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
   const histories = await History.findAll({
     where: { UserId: req.userId },
     include: [Product],
@@ -27,8 +26,7 @@ router.get("/myHistory/", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: histories });
 });
 
-router.get("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const history = await History.findOne({
     where: { id: Number(req.params.id) },
     include: [{ all: true }],
@@ -40,8 +38,7 @@ router.get("/:id", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: history });
 });
 
-router.put("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const history = await History.findOne({
     where: { id: Number(req.params.id) },
   });
@@ -61,8 +58,7 @@ router.put("/:id", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: updatedHistory });
 });
 
-router.delete("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const product = await History.findOne({
     where: { id: Number(req.params.id) },
   });

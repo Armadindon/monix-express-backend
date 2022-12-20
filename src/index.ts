@@ -3,17 +3,16 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import dotenv from "dotenv";
 import { Sequelize } from "sequelize";
-import User from "./Model/User";
+import UserModel, { User } from "./Model/User";
 import Product from "./Model/Product";
 import History from "./Model/History";
 import AuthController from "./Controllers/AuthController";
 import UserController from "./Controllers/UserController";
 import ProductController from "./Controllers/ProductsController";
 import BalanceController from "./Controllers/BalanceController";
-import HistoryController from "./Controllers/HistoryController"
+import HistoryController from "./Controllers/HistoryController";
 
 import swaggerConfig from "./config/swagger.json";
-import { insertDummyData } from "./SetupTestData";
 
 /** MODELS IMPORTS */
 
@@ -28,10 +27,28 @@ export const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: "data/db.sqlite",
 });
-User(sequelize);
+UserModel(sequelize);
 Product(sequelize);
 History(sequelize);
-sequelize.sync({ force: true }).then(() => insertDummyData());
+sequelize.sync({ force: true }).then(async () => {
+  const admins = await User.findAll({ where: { admin: true } });
+  if (admins.length === 0) {
+    console.log("Pas d'admin detecté, création d'un compte admin par défaut");
+    const randomPassword = (Math.random() + 1).toString(36).substring(7);
+    await User.create({
+      username: "Admin",
+      email: "Admin@localhost",
+      password: randomPassword,
+      admin: true,
+      balance: 1000,
+    });
+    console.log(
+      `Compte admin créée : Admin / ${randomPassword}. Please note this password, it will not be relogged`
+    );
+  }
+});
+
+// Create admin account if it doesn't exist yet
 
 // SERVER SETUP
 app.use(express.static("public"));

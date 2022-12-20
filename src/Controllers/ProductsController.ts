@@ -1,7 +1,7 @@
 import { Router, json } from "express";
 import multer from "multer";
 import { Product } from "../Model/Product";
-import { authenticateToken } from "../Services/AuthentificationServices";
+import { authenticateToken, isAdmin } from "../Services/AuthentificationServices";
 import { v4 as uuidV4 } from "uuid";
 import fs from "fs";
 import path from "path";
@@ -12,13 +12,11 @@ const upload = multer({ dest: "public/tmp/" });
 router.use(json());
 
 router.get("/", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
   const products = await Product.findAll();
   res.status(200).json({ sucess: true, data: products });
 });
 
 router.get("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
   const product = await Product.findOne({
     where: { id: Number(req.params.id) },
   });
@@ -29,8 +27,7 @@ router.get("/:id", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: product });
 });
 
-router.put("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const product = await Product.findOne({
     where: { id: Number(req.params.id) },
   });
@@ -49,8 +46,7 @@ router.put("/:id", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: updatedProduct });
 });
 
-router.delete("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const product = await Product.findOne({
     where: { id: Number(req.params.id) },
   });
@@ -70,7 +66,6 @@ router.post(
   upload.single("image"),
   authenticateToken,
   async (req, res, next) => {
-    // TODO: Mettre en place un système de droits
     const product = await Product.findOne({
       where: { id: Number(req.params.id) },
     });

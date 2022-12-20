@@ -21,6 +21,7 @@ export class User extends Model<
   declare password: string;
   declare balance: CreationOptional<number>;
   declare avatar: string | null;
+  declare admin: CreationOptional<boolean>;
   declare histories: NonAttribute<History[]>;
 
   public validPassword(password: string): boolean {
@@ -37,6 +38,7 @@ export default (sequelize: Sequelize) => {
       password: { type: DataTypes.STRING, allowNull: false, defaultValue: 0 },
       balance: { type: DataTypes.FLOAT, defaultValue: 0 },
       avatar: { type: DataTypes.STRING },
+      admin: { type: DataTypes.BOOLEAN, defaultValue: false },
     },
     {
       sequelize,

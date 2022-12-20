@@ -1,6 +1,7 @@
 import { Router, json } from "express";
 import {
   authenticateToken,
+  isAdmin,
   setUser,
 } from "../Services/AuthentificationServices";
 import { User } from "../Model/User";
@@ -21,16 +22,14 @@ const cleanUser = (user: User) => {
   return cleanedUser;
 };
 
-router.get("/", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
   const users = await User.findAll();
   const cleanedUsers: any[] = [];
   for (let i = 0; i < users.length; i++) cleanedUsers.push(cleanUser(users[i]));
   res.status(200).json({ sucess: true, data: cleanedUsers });
 });
 
-router.get("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
     const error = new Error("User non trouvé");
@@ -39,8 +38,7 @@ router.get("/:id", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: cleanUser(user) });
 });
 
-router.put("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
     const error = new Error("User non trouvé");
@@ -55,8 +53,7 @@ router.put("/:id", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: cleanUser(updatedUser) });
 });
 
-router.delete("/:id", authenticateToken, async (req, res, next) => {
-  // TODO: Mettre en place un système de droits
+router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
     const error = new Error("User non trouvé");
@@ -75,7 +72,6 @@ router.post(
   authenticateToken,
   setUser,
   async (req, res, next) => {
-    // TODO: Mettre en place un système de droits
     const user: User = req.user;
 
     if (req.file == undefined) {
@@ -121,7 +117,6 @@ router.post(
   authenticateToken,
   setUser,
   async (req, res, next) => {
-    // TODO: Mettre en place un système de droits
     const user: User = req.user;
     const { oldPassword, newPassword, passwordConfirmation } = req.body;
 
