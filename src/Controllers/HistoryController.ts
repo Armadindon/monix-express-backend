@@ -7,6 +7,7 @@ import {
 } from "../Services/AuthentificationServices";
 import { Product } from "../Model/Product";
 import { User } from "../Model/User";
+import { AppError } from "..";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ router.use(json());
 
 router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
   const histories = await History.findAll({ include: [Product, User] });
-  res.status(200).json({ sucess: true, data: histories });
+  res.status(200).json({ success: true, data: histories });
 });
 
 router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
@@ -27,7 +28,7 @@ router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
     ProductId: historyToSet.ProductId,
     UserId: historyToSet.UserId,
   });
-  res.status(200).json({ sucess: true, data: createdHistory });
+  res.status(200).json({ success: true, data: createdHistory });
 });
 
 // TODO: Voir pourquoi ce endpoint doit être mit avant les autres (sinon, c'est le router.get('/:id') qui l'attrape)
@@ -36,7 +37,7 @@ router.get("/myHistory/", authenticateToken, async (req, res, next) => {
     where: { UserId: req.userId },
     include: [Product],
   });
-  res.status(200).json({ sucess: true, data: histories });
+  res.status(200).json({ success: true, data: histories });
 });
 
 router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
@@ -45,10 +46,10 @@ router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     include: [{ all: true }],
   });
   if (history == null) {
-    const error = new Error("Entrée d'historique non trouvée");
+    const error = new AppError(404, "Entrée d'historique non trouvée");
     return next(error);
   }
-  res.status(200).json({ sucess: true, data: history });
+  res.status(200).json({ success: true, data: history });
 });
 
 router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
@@ -56,7 +57,7 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     where: { id: Number(req.params.id) },
   });
   if (history == null) {
-    const error = new Error("Entrée d'historique non trouvée");
+    const error = new AppError(404, "Entrée d'historique non trouvée");
     return next(error);
   }
   // On update l'utilisateur
@@ -68,7 +69,7 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     ProductId: historyToSet.ProductId,
     UserId: historyToSet.UserId,
   });
-  res.status(200).json({ sucess: true, data: updatedHistory });
+  res.status(200).json({ success: true, data: updatedHistory });
 });
 
 router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
@@ -76,13 +77,13 @@ router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     where: { id: Number(req.params.id) },
   });
   if (product == null) {
-    const error = new Error("Entrée d'historique non trouvée");
+    const error = new AppError(404, "Entrée d'historique non trouvée");
     return next(error);
   }
   // On delete l'utilisateur
   product.destroy();
   res.status(200).json({
-    sucess: true,
+    success: true,
     message: "L'entrée d'historique a bien été supprimé",
   });
 });

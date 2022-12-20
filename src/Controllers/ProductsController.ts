@@ -5,6 +5,7 @@ import { authenticateToken, isAdmin } from "../Services/AuthentificationServices
 import { v4 as uuidV4 } from "uuid";
 import fs from "fs";
 import path from "path";
+import { AppError } from "..";
 
 const router = Router();
 const upload = multer({ dest: "public/tmp/" });
@@ -13,7 +14,7 @@ router.use(json());
 
 router.get("/", authenticateToken, async (req, res, next) => {
   const products = await Product.findAll();
-  res.status(200).json({ sucess: true, data: products });
+  res.status(200).json({ success: true, data: products });
 });
 
 router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
@@ -25,7 +26,7 @@ router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
     stock: productToSet.stock,
     barcode: productToSet.barcode,
   });
-  res.status(200).json({ sucess: true, data: createdProduct });
+  res.status(200).json({ success: true, data: createdProduct });
 });
 
 router.get("/:id", authenticateToken, async (req, res, next) => {
@@ -33,10 +34,10 @@ router.get("/:id", authenticateToken, async (req, res, next) => {
     where: { id: Number(req.params.id) },
   });
   if (product == null) {
-    const error = new Error("Produit non trouvé");
+    const error = new AppError(404, "Produit non trouvé");
     return next(error);
   }
-  res.status(200).json({ sucess: true, data: product });
+  res.status(200).json({ success: true, data: product });
 });
 
 router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
@@ -44,7 +45,7 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     where: { id: Number(req.params.id) },
   });
   if (product == null) {
-    const error = new Error("Produit non trouvé");
+    const error = new AppError(404, "Produit non trouvé");
     return next(error);
   }
   // On update l'utilisateur
@@ -55,7 +56,7 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     stock: productToSet.stock,
     barcode: productToSet.barcode,
   });
-  res.status(200).json({ sucess: true, data: updatedProduct });
+  res.status(200).json({ success: true, data: updatedProduct });
 });
 
 router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
@@ -63,14 +64,14 @@ router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     where: { id: Number(req.params.id) },
   });
   if (product == null) {
-    const error = new Error("Produit non trouvé");
+    const error = new AppError(404, "Produit non trouvé");
     return next(error);
   }
   // On delete l'utilisateur
   product.destroy();
   res
     .status(200)
-    .json({ sucess: true, message: "Le Produit a bien été supprimé" });
+    .json({ success: true, message: "Le Produit a bien été supprimé" });
 });
 
 router.post(
@@ -82,12 +83,12 @@ router.post(
       where: { id: Number(req.params.id) },
     });
     if (product == null) {
-      const error = new Error("Produit non trouvé");
+      const error = new AppError(404, "Produit non trouvé");
       return next(error);
     }
 
     if (req.file == undefined) {
-      const error = new Error("Image 'image' non trouvée");
+      const error = new AppError(400, "Image 'image' non trouvée");
       return next(error);
     }
 
@@ -110,7 +111,7 @@ router.post(
         if (err) return next(err);
         // On récupère l'image de la requete
         const updatedProduct = await product.update({ image: fileNameTarget });
-        res.status(200).json({ sucess: true, data: updatedProduct });
+        res.status(200).json({ success: true, data: updatedProduct });
       });
     } else {
       fs.unlink(tempPath, (err) => {

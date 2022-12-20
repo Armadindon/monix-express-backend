@@ -10,6 +10,7 @@ import uuid from "uuid";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidV4 } from "uuid";
+import { AppError } from "..";
 
 const router = Router();
 const upload = multer({ dest: "public/tmp/" });
@@ -26,7 +27,7 @@ router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
   const users = await User.findAll();
   const cleanedUsers: any[] = [];
   for (let i = 0; i < users.length; i++) cleanedUsers.push(cleanUser(users[i]));
-  res.status(200).json({ sucess: true, data: cleanedUsers });
+  res.status(200).json({ success: true, data: cleanedUsers });
 });
 
 router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
@@ -39,22 +40,22 @@ router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
     admin: userToSet.admin,
     balance: userToSet.balance,
   });
-  res.status(200).json({ sucess: true, data: cleanUser(createdUser) });
+  res.status(200).json({ success: true, data: cleanUser(createdUser) });
 });
 
 router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
-    const error = new Error("User non trouvé");
+    const error = new AppError(404, "User non trouvé");
     return next(error);
   }
-  res.status(200).json({ sucess: true, data: cleanUser(user) });
+  res.status(200).json({ success: true, data: cleanUser(user) });
 });
 
 router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
-    const error = new Error("User non trouvé");
+    const error = new AppError(404, "User non trouvé");
     return next(error);
   }
   // On update l'utilisateur
@@ -63,20 +64,20 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
     username: userToSet?.username,
     email: userToSet?.email,
   });
-  res.status(200).json({ sucess: true, data: cleanUser(updatedUser) });
+  res.status(200).json({ success: true, data: cleanUser(updatedUser) });
 });
 
 router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
-    const error = new Error("User non trouvé");
+    const error = new AppError(404, "User non trouvé");
     return next(error);
   }
   // On delete l'utilisateur
   user.destroy();
   res
     .status(200)
-    .json({ sucess: true, message: "L'utilisateur a bien été supprimé" });
+    .json({ success: true, message: "L'utilisateur a bien été supprimé" });
 });
 
 router.post(
@@ -88,7 +89,7 @@ router.post(
     const user: User = req.user;
 
     if (req.file == undefined) {
-      const error = new Error("Image 'avatar' non trouvée");
+      const error = new AppError(400, "Image 'avatar' non trouvée");
       return next(error);
     }
 
@@ -111,7 +112,7 @@ router.post(
         if (err) return next(err);
         // On récupère l'image de la requete
         const updatedUser = await user.update({ avatar: fileNameTarget });
-        res.status(200).json({ sucess: true, data: cleanUser(updatedUser) });
+        res.status(200).json({ success: true, data: cleanUser(updatedUser) });
       });
     } else {
       fs.unlink(tempPath, (err) => {
@@ -134,26 +135,31 @@ router.post(
     const { oldPassword, newPassword, passwordConfirmation } = req.body;
 
     if (newPassword !== passwordConfirmation) {
-      const error = new Error(
+      const error = new AppError(
+        400,
         "Le mot de passe et la confirmation ne correspondent pas"
       );
       return next(error);
     }
 
     if (oldPassword === newPassword) {
-      const error = new Error(
+      const error = new AppError(
+        400,
         "Le mot de passe n'as pas changé ! Merci de changer de mot de passe"
       );
       return next(error);
     }
 
     if (!user.validPassword(oldPassword)) {
-      const error = new Error("L'ancien mot de passe n'est pas le bon !");
+      const error = new AppError(
+        400,
+        "L'ancien mot de passe n'est pas le bon !"
+      );
       return next(error);
     }
     user.update({ password: newPassword });
     res.status(200).json({
-      sucess: true,
+      success: true,
       message: "Votre mot de passe a bien changé, vous pouvez vous reconnecter",
     });
   }

@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../Model/User";
+import { AppError } from "..";
 
 /** Utilitary middleware to check if the user is connected */
 export const authenticateToken: RequestHandler = (req, res, next) => {
@@ -10,7 +11,13 @@ export const authenticateToken: RequestHandler = (req, res, next) => {
   if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, process.env.JWT_SECRET as string, (err: any, user: any) => {
-    if (err) return res.sendStatus(403);
+    if (err) {
+      const error = new AppError(
+        403,
+        "Token invalide, merci de vous reconnecter"
+      );
+      next(error);
+    }
     req.userId = user.userId;
     next();
   });
@@ -30,7 +37,8 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
   else user = (await User.findOne({ where: { id: req.userId } })) as User;
 
   if (!user.admin) {
-    const error = new Error(
+    const error = new AppError(
+      403,
       "Il faut être un admin pour accéder à cette fonctionnalité"
     );
     next(error);

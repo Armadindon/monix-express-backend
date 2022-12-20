@@ -2,6 +2,7 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../Model/User";
 import { json } from "express";
+import { AppError } from "..";
 
 const router = Router();
 
@@ -15,13 +16,14 @@ router.post("/login", async (req, res, next) => {
   try {
     existingUser = await User.findOne({ where: { username } });
   } catch {
-    const error = new Error(
+    const error = new AppError(
+      500,
       "Une erreur inconnue à eu lieu, merci de vérifier les paramètres de la requête"
     );
     return next(error);
   }
   if (!existingUser || !existingUser.validPassword(password)) {
-    const error = Error("Impossible de se connecter");
+    const error = new AppError(400, "Impossible de se connecter");
     return next(error);
   }
   let token;
@@ -37,7 +39,8 @@ router.post("/login", async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    const error = new Error(
+    const error = new AppError(
+      500,
       "Impossible de créer le token JWT ! Merci de vérifier les paramètres de la requete"
     );
     return next(error);
@@ -59,7 +62,8 @@ router.post("/signup", async (req, res, next) => {
   try {
     await newUser.save();
   } catch {
-    const error = new Error(
+    const error = new AppError(
+      400,
       "Impossible de créer l'utilisateur ! Merci de vérifier vos paramètres"
     );
     return next(error);
@@ -72,7 +76,8 @@ router.post("/signup", async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    const error = new Error(
+    const error = new AppError(
+      500,
       "Impossible de créer le token JWT ! Merci de vérifier les paramètres de la requete"
     );
     return next(error);

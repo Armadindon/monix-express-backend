@@ -6,6 +6,7 @@ import {
 import { User } from "../Model/User";
 import { Product } from "../Model/Product";
 import { History } from "../Model/History";
+import { AppError } from "..";
 
 const router = Router();
 router.use(json());
@@ -19,7 +20,7 @@ router.post("/buy", authenticateToken, setUser, async (req, res, next) => {
 
   const productBuyed = await Product.findOne({ where: { id: productId } });
   if (productBuyed === null) {
-    const err = new Error("Le produit n'as pas été trouvé");
+    const err = new AppError(400, "Le produit n'as pas été trouvé");
     return next(err);
   }
 
@@ -27,7 +28,8 @@ router.post("/buy", authenticateToken, setUser, async (req, res, next) => {
 
   const totalPrice = productBuyed.price * amount;
   if (minBalance > user.balance - totalPrice) {
-    const err = new Error(
+    const err = new AppError(
+      400,
       "Vous n'avez pas assez de crédit, le total de crédit que vous auriez après cet achat depasserait la dette maximale du club"
     );
     return next(err);
@@ -51,7 +53,8 @@ router.post("/recharge", authenticateToken, setUser, async (req, res, next) => {
 
   const totalBalance = user.balance + amount;
   if (totalBalance > maxBalance) {
-    const err = new Error(
+    const err = new AppError(
+      400,
       "Vous auriez trop de crédits, le total de crédit que vous auriez après cet achat depasserait la max du club"
     );
     return next(err);

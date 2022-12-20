@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import dotenv from "dotenv";
@@ -14,7 +14,33 @@ import HistoryController from "./Controllers/HistoryController";
 
 import swaggerConfig from "./config/swagger.json";
 
-/** MODELS IMPORTS */
+// Error handlers
+export class AppError extends Error {
+  statusCode: number;
+
+  constructor(statusCode: number, message: string) {
+    super(message);
+
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = Error.name;
+    this.statusCode = statusCode;
+    Error.captureStackTrace(this);
+  }
+}
+
+const errorLogger = (
+  error: AppError,
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  console.error(error);
+  response.status(error.statusCode).json({
+    success: false,
+    message: error.message
+  })
+  next();
+};
 
 // GENERAL SETUP
 dotenv.config();
@@ -58,6 +84,8 @@ app.use("/users", UserController);
 app.use("/products", ProductController);
 app.use("/balance", BalanceController);
 app.use("/history", HistoryController);
+
+app.use(errorLogger);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
