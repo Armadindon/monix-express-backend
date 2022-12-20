@@ -1,12 +1,12 @@
-import { Router, json } from "express";
+import { Router, json } from 'express';
 import {
   authenticateToken,
   setUser,
-} from "../Services/AuthentificationServices";
-import { User } from "../Model/User";
-import { Product } from "../Model/Product";
-import { History } from "../Model/History";
-import { AppError } from "..";
+} from '../Services/AuthentificationServices';
+import { User } from '../Model/User';
+import { Product } from '../Model/Product';
+import { History } from '../Model/History';
+import { AppError } from '..';
 
 const router = Router();
 router.use(json());
@@ -14,7 +14,7 @@ router.use(json());
 const minBalance = -50;
 const maxBalance = 100;
 
-router.post("/buy", authenticateToken, setUser, async (req, res, next) => {
+router.post('/buy', authenticateToken, setUser, async (req, res, next) => {
   const user = req.user as User;
   const { productId, amount } = req.body;
 
@@ -30,7 +30,7 @@ router.post("/buy", authenticateToken, setUser, async (req, res, next) => {
   if (minBalance > user.balance - totalPrice) {
     const err = new AppError(
       400,
-      "Vous n'avez pas assez de crédit, le total de crédit que vous auriez après cet achat depasserait la dette maximale du club"
+      "Vous n'avez pas assez de crédit, le total de crédit que vous auriez après cet achat depasserait la dette maximale du club",
     );
     return next(err);
   }
@@ -47,7 +47,7 @@ router.post("/buy", authenticateToken, setUser, async (req, res, next) => {
   return res.status(200).json({ success: true, data: userUpdated });
 });
 
-router.post("/recharge", authenticateToken, setUser, async (req, res, next) => {
+router.post('/recharge', authenticateToken, setUser, async (req, res, next) => {
   const user = req.user as User;
   const { amount } = req.body;
 
@@ -55,7 +55,7 @@ router.post("/recharge", authenticateToken, setUser, async (req, res, next) => {
   if (totalBalance > maxBalance) {
     const err = new AppError(
       400,
-      "Vous auriez trop de crédits, le total de crédit que vous auriez après cet achat depasserait la max du club"
+      'Vous auriez trop de crédits, le total de crédit que vous auriez après cet achat depasserait la max du club',
     );
     return next(err);
   }

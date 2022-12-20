@@ -1,24 +1,23 @@
-import { Router, json } from "express";
-import { History } from "../Model/History";
+import { Router, json } from 'express';
+import { History } from '../Model/History';
 import {
   authenticateToken,
   isAdmin,
-  setUser,
-} from "../Services/AuthentificationServices";
-import { Product } from "../Model/Product";
-import { User } from "../Model/User";
-import { AppError } from "..";
+} from '../Services/AuthentificationServices';
+import { Product } from '../Model/Product';
+import { User } from '../Model/User';
+import { AppError } from '..';
 
 const router = Router();
 
 router.use(json());
 
-router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
+router.get('/', authenticateToken, isAdmin, async (req, res) => {
   const histories = await History.findAll({ include: [Product, User] });
   res.status(200).json({ success: true, data: histories });
 });
 
-router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
+router.post('/', authenticateToken, isAdmin, async (req, res) => {
   // On crée l'entrée d'historique
   const historyToSet = req.body;
   const createdHistory = await History.create({
@@ -32,7 +31,7 @@ router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
 });
 
 // TODO: Voir pourquoi ce endpoint doit être mit avant les autres (sinon, c'est le router.get('/:id') qui l'attrape)
-router.get("/myHistory/", authenticateToken, async (req, res, next) => {
+router.get('/myHistory/', authenticateToken, async (req, res) => {
   const histories = await History.findAll({
     where: { UserId: req.userId },
     include: [Product],
@@ -40,7 +39,7 @@ router.get("/myHistory/", authenticateToken, async (req, res, next) => {
   res.status(200).json({ success: true, data: histories });
 });
 
-router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
+router.get('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const history = await History.findOne({
     where: { id: Number(req.params.id) },
     include: [{ all: true }],
@@ -52,7 +51,7 @@ router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   res.status(200).json({ success: true, data: history });
 });
 
-router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
+router.put('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const history = await History.findOne({
     where: { id: Number(req.params.id) },
   });
@@ -72,7 +71,7 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   res.status(200).json({ success: true, data: updatedHistory });
 });
 
-router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
+router.delete('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const product = await History.findOne({
     where: { id: Number(req.params.id) },
   });

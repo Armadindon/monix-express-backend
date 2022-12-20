@@ -1,20 +1,21 @@
-import { RequestHandler } from "express";
-import jwt from "jsonwebtoken";
-import { User } from "../Model/User";
-import { AppError } from "..";
+import { RequestHandler } from 'express';
+import jwt from 'jsonwebtoken';
+import { User } from '../Model/User';
+import { AppError } from '..';
 
 /** Utilitary middleware to check if the user is connected */
 export const authenticateToken: RequestHandler = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (token == null) return res.sendStatus(401);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   jwt.verify(token, process.env.JWT_SECRET as string, (err: any, user: any) => {
     if (err) {
       const error = new AppError(
         403,
-        "Token invalide, merci de vous reconnecter"
+        'Token invalide, merci de vous reconnecter',
       );
       next(error);
     }
@@ -39,7 +40,7 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
   if (!user.admin) {
     const error = new AppError(
       403,
-      "Il faut être un admin pour accéder à cette fonctionnalité"
+      'Il faut être un admin pour accéder à cette fonctionnalité',
     );
     next(error);
   }

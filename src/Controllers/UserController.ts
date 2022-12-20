@@ -1,36 +1,38 @@
-import { Router, json } from "express";
+import { Router, json } from 'express';
 import {
   authenticateToken,
   isAdmin,
   setUser,
-} from "../Services/AuthentificationServices";
-import { User } from "../Model/User";
-import multer from "multer";
-import uuid from "uuid";
-import path from "path";
-import fs from "fs";
-import { v4 as uuidV4 } from "uuid";
-import { AppError } from "..";
+} from '../Services/AuthentificationServices';
+import { User } from '../Model/User';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { v4 as uuidV4 } from 'uuid';
+import { AppError } from '..';
 
 const router = Router();
-const upload = multer({ dest: "public/tmp/" });
+const upload = multer({ dest: 'public/tmp/' });
 
 router.use(json());
 
+type CleanedUser = Partial<User>;
+
 /** Clean the user from all the attributes that we don't want to include */
-const cleanUser = (user: User) => {
+const cleanUser = (user: User): CleanedUser => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, ...cleanedUser } = user.dataValues;
   return cleanedUser;
 };
 
-router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
+router.get('/', authenticateToken, isAdmin, async (req, res) => {
   const users = await User.findAll();
-  const cleanedUsers: any[] = [];
+  const cleanedUsers: CleanedUser[] = [];
   for (let i = 0; i < users.length; i++) cleanedUsers.push(cleanUser(users[i]));
   res.status(200).json({ success: true, data: cleanedUsers });
 });
 
-router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
+router.post('/', authenticateToken, isAdmin, async (req, res) => {
   // On crée l'utilisateur
   const userToSet = req.body;
   const createdUser = await User.create({
@@ -43,19 +45,19 @@ router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
   res.status(200).json({ success: true, data: cleanUser(createdUser) });
 });
 
-router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
+router.get('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
-    const error = new AppError(404, "User non trouvé");
+    const error = new AppError(404, 'User non trouvé');
     return next(error);
   }
   res.status(200).json({ success: true, data: cleanUser(user) });
 });
 
-router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
+router.put('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
-    const error = new AppError(404, "User non trouvé");
+    const error = new AppError(404, 'User non trouvé');
     return next(error);
   }
   // On update l'utilisateur
@@ -67,10 +69,10 @@ router.put("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   res.status(200).json({ success: true, data: cleanUser(updatedUser) });
 });
 
-router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
+router.delete('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
-    const error = new AppError(404, "User non trouvé");
+    const error = new AppError(404, 'User non trouvé');
     return next(error);
   }
   // On delete l'utilisateur
@@ -81,8 +83,8 @@ router.delete("/:id", authenticateToken, isAdmin, async (req, res, next) => {
 });
 
 router.post(
-  "/uploadAvatar",
-  upload.single("avatar"),
+  '/uploadAvatar',
+  upload.single('avatar'),
   authenticateToken,
   setUser,
   async (req, res, next) => {
@@ -94,19 +96,19 @@ router.post(
     }
 
     const tempPath = req.file.path;
-    const fileNameTarget = uuidV4() + ".png";
-    const targetPath = "public/images/" + fileNameTarget;
+    const fileNameTarget = uuidV4() + '.png';
+    const targetPath = 'public/images/' + fileNameTarget;
 
     // Si l'utilisateur avait une image, on supprime l'ancienne
     if (user.avatar) {
-      fs.unlink("public/images/" + user.avatar, (err) => {
+      fs.unlink('public/images/' + user.avatar, (err) => {
         if (err) return next(err);
       });
       await user.update({ avatar: null });
     }
 
     if (
-      path.extname(req.file?.originalname as string).toLowerCase() === ".png"
+      path.extname(req.file?.originalname as string).toLowerCase() === '.png'
     ) {
       fs.rename(tempPath, targetPath, async (err) => {
         if (err) return next(err);
@@ -120,14 +122,14 @@ router.post(
 
         res
           .status(403)
-          .json({ success: false, error: "Seulement les png sont autorisés" });
+          .json({ success: false, error: 'Seulement les png sont autorisés' });
       });
     }
-  }
+  },
 );
 
 router.post(
-  "/changePassword",
+  '/changePassword',
   authenticateToken,
   setUser,
   async (req, res, next) => {
@@ -137,7 +139,7 @@ router.post(
     if (newPassword !== passwordConfirmation) {
       const error = new AppError(
         400,
-        "Le mot de passe et la confirmation ne correspondent pas"
+        'Le mot de passe et la confirmation ne correspondent pas',
       );
       return next(error);
     }
@@ -145,7 +147,7 @@ router.post(
     if (oldPassword === newPassword) {
       const error = new AppError(
         400,
-        "Le mot de passe n'as pas changé ! Merci de changer de mot de passe"
+        "Le mot de passe n'as pas changé ! Merci de changer de mot de passe",
       );
       return next(error);
     }
@@ -153,16 +155,16 @@ router.post(
     if (!user.validPassword(oldPassword)) {
       const error = new AppError(
         400,
-        "L'ancien mot de passe n'est pas le bon !"
+        "L'ancien mot de passe n'est pas le bon !",
       );
       return next(error);
     }
     user.update({ password: newPassword });
     res.status(200).json({
       success: true,
-      message: "Votre mot de passe a bien changé, vous pouvez vous reconnecter",
+      message: 'Votre mot de passe a bien changé, vous pouvez vous reconnecter',
     });
-  }
+  },
 );
 
 export default router;

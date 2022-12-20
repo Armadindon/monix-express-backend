@@ -1,5 +1,5 @@
-import { User } from "./User";
-import { Product } from "./Product";
+import { User } from './User';
+import { Product } from './Product';
 import {
   CreationOptional,
   DataTypes,
@@ -9,7 +9,7 @@ import {
   Model,
   NonAttribute,
   Sequelize,
-} from "sequelize";
+} from 'sequelize';
 
 export class History extends Model<
   InferAttributes<History>,
@@ -29,8 +29,8 @@ export class History extends Model<
   declare description: string;
   declare date: Date;
 
-  declare getUser:() => User;
-  declare getProduct:() => Product; 
+  declare getUser: () => User;
+  declare getProduct: () => Product;
 }
 
 export default (sequelize: Sequelize) => {
@@ -45,21 +45,21 @@ export default (sequelize: Sequelize) => {
         defaultValue: new Date(),
       },
     },
-    { sequelize }
+    { sequelize },
   );
 
   // Creations of the associations
   User.hasMany(History, {
-    sourceKey: "id",
-    foreignKey: "ProductId",
-    as: "user",
+    sourceKey: 'id',
+    foreignKey: 'ProductId',
+    as: 'user',
   });
   History.belongsTo(User);
 
   Product.hasMany(History, {
-    sourceKey: "id",
-    foreignKey: "UserId",
-    as: "product",
+    sourceKey: 'id',
+    foreignKey: 'UserId',
+    as: 'product',
   });
   History.belongsTo(Product);
 };

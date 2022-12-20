@@ -5,7 +5,7 @@ import {
   InferCreationAttributes,
   Model,
   Sequelize,
-} from "sequelize";
+} from 'sequelize';
 
 export class Product extends Model<
   InferAttributes<Product>,
@@ -29,6 +29,6 @@ export default (sequelize: Sequelize) => {
       image: { type: DataTypes.STRING },
       barcode: { type: DataTypes.STRING },
     },
-    { sequelize }
+    { sequelize },
   );
 };

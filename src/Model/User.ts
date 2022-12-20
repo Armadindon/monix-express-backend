@@ -6,9 +6,9 @@ import {
   Model,
   NonAttribute,
   Sequelize,
-} from "sequelize";
-import { History } from "./History";
-import bcrypt from "bcrypt";
+} from 'sequelize';
+import { History } from './History';
+import bcrypt from 'bcrypt';
 
 export class User extends Model<
   InferAttributes<User>,
@@ -45,7 +45,7 @@ export default (sequelize: Sequelize) => {
       hooks: {
         beforeCreate: async (user) => {
           if (user.password) {
-            const salt = await bcrypt.genSaltSync(10, "a");
+            const salt = await bcrypt.genSaltSync(10, 'a');
             user.password = bcrypt.hashSync(user.password, salt);
           }
         },
@@ -57,11 +57,11 @@ export default (sequelize: Sequelize) => {
             previousPassword &&
             user.password !== previousPassword
           ) {
-            const salt = await bcrypt.genSaltSync(10, "a");
+            const salt = await bcrypt.genSaltSync(10, 'a');
             user.password = bcrypt.hashSync(user.password, salt);
           }
         },
       },
-    }
+    },
   );
 };
