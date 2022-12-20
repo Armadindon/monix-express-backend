@@ -66,8 +66,6 @@ router.post("/recharge", authenticateToken, setUser, async (req, res, next) => {
     date: new Date(),
     description: ``,
     movement: amount,
-    //TODO : voir comment faire en sorte que ça accepte des undefined
-    ProductId: -1,
     UserId: user.id,
   });
   return res.status(200).json({ success: true, data: userUpdated });
