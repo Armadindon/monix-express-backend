@@ -29,6 +29,19 @@ router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: cleanedUsers });
 });
 
+router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
+  // On crée l'utilisateur
+  const userToSet = req.body;
+  const createdUser = await User.create({
+    username: userToSet?.username,
+    email: userToSet?.email,
+    password: userToSet.password,
+    admin: userToSet.admin,
+    balance: userToSet.balance,
+  });
+  res.status(200).json({ sucess: true, data: cleanUser(createdUser) });
+});
+
 router.get("/:id", authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
@@ -139,13 +152,10 @@ router.post(
       return next(error);
     }
     user.update({ password: newPassword });
-    res
-      .status(200)
-      .json({
-        sucess: true,
-        message:
-          "Votre mot de passe a bien changé, vous pouvez vous reconnecter",
-      });
+    res.status(200).json({
+      sucess: true,
+      message: "Votre mot de passe a bien changé, vous pouvez vous reconnecter",
+    });
   }
 );
 

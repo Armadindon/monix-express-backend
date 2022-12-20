@@ -16,6 +16,18 @@ router.get("/", authenticateToken, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: products });
 });
 
+router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
+  // On créee le produit
+  const productToSet = req.body;
+  const createdProduct = await Product.create({
+    name: productToSet.name,
+    price: productToSet.price,
+    stock: productToSet.stock,
+    barcode: productToSet.barcode,
+  });
+  res.status(200).json({ sucess: true, data: createdProduct });
+});
+
 router.get("/:id", authenticateToken, async (req, res, next) => {
   const product = await Product.findOne({
     where: { id: Number(req.params.id) },

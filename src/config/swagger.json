@@ -134,6 +134,42 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create a user",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Création d'un utilisateur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGet"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/users/{id}": {
@@ -359,6 +395,42 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProductList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a product",
+        "tags": ["Products"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductModification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Création d'un produit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductGet"
                 }
               }
             }
@@ -648,6 +720,42 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "Create an history entry",
+        "tags": ["Historique"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HistoryCreation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Création d'une entrée d'historique",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryGet"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/history/{id}": {
@@ -892,10 +1000,21 @@
           "id": { "type": "number" },
           "username": { "type": "string" },
           "email": { "type": "string" },
-          "balance": { "type": "string" },
+          "balance": { "type": "number" },
           "avatar": { "type": "string" },
           "createdAt": { "type": "string" },
           "updatedAt": { "type": "string" }
+        }
+      },
+      "UserCreation": {
+        "type": "object",
+        "required": ["username", "email", "password", "balance"],
+        "properties": {
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "balance": { "type": "number" },
+          "admin": { "type": "boolean" }
         }
       },
       "UserModification": {
@@ -1005,6 +1124,17 @@
           "UserId": { "type": "number" },
           "createdAt": { "type": "string" },
           "updatedAt": { "type": "string" }
+        }
+      },
+      "HistoryCreation": {
+        "type": "object",
+        "required": ["description", "movement", "ProductId", "UserId"],
+        "properties": {
+          "description": { "type": "string" },
+          "date": { "type": "string" },
+          "movement": { "type": "number" },
+          "ProductId": { "type": "number" },
+          "UserId": { "type": "number" }
         }
       },
       "HistoryModification": {

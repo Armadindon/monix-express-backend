@@ -37,7 +37,6 @@ router.post("/login", async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    console.log(err);
     const error = new Error(
       "Impossible de créer le token JWT ! Merci de vérifier les paramètres de la requete"
     );

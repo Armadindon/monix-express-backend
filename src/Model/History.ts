@@ -22,7 +22,7 @@ export class History extends Model<
   declare user: NonAttribute<User>;
 
   // Product
-  declare ProductId: ForeignKey<number>;
+  declare ProductId: CreationOptional<ForeignKey<number>>;
   declare product: NonAttribute<Product>;
 
   declare movement: number;

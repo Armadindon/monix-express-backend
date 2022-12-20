@@ -17,6 +17,19 @@ router.get("/", authenticateToken, isAdmin, async (req, res, next) => {
   res.status(200).json({ sucess: true, data: histories });
 });
 
+router.post("/", authenticateToken, isAdmin, async (req, res, next) => {
+  // On crée l'entrée d'historique
+  const historyToSet = req.body;
+  const createdHistory = await History.create({
+    date: historyToSet.date,
+    description: historyToSet.description,
+    movement: historyToSet.movement,
+    ProductId: historyToSet.ProductId,
+    UserId: historyToSet.UserId,
+  });
+  res.status(200).json({ sucess: true, data: createdHistory });
+});
+
 // TODO: Voir pourquoi ce endpoint doit être mit avant les autres (sinon, c'est le router.get('/:id') qui l'attrape)
 router.get("/myHistory/", authenticateToken, async (req, res, next) => {
   const histories = await History.findAll({
