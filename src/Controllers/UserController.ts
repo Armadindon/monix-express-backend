@@ -45,6 +45,22 @@ router.post('/', authenticateToken, isAdmin, async (req, res) => {
   res.status(200).json({ success: true, data: cleanUser(createdUser) });
 });
 
+router.get('/me', authenticateToken, setUser, async (req, res) => {
+  const user = req.user as User;
+  res.status(200).json({ success: true, data: cleanUser(user) });
+});
+
+router.put('/me', authenticateToken, setUser, async (req, res) => {
+  const user = req.user as User;
+  // On update l'utilisateur
+  const userToSet = req.body;
+  const updatedUser = await user.update({
+    username: userToSet?.username,
+    email: userToSet?.email,
+  });
+  res.status(200).json({ success: true, data: cleanUser(updatedUser) });
+});
+
 router.get('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const user = await User.findOne({ where: { id: Number(req.params.id) } });
   if (user == null) {
