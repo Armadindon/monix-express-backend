@@ -11,8 +11,8 @@ import { AppError } from '..';
 const router = Router();
 router.use(json());
 
-const minBalance = -50;
-const maxBalance = 100;
+const minBalance = +(process.env.MIN_BALANCE as string);
+const maxBalance = +(process.env.MAX_BALANCE as string);
 
 router.post('/buy', authenticateToken, setUser, async (req, res, next) => {
   const user = req.user as User;
