@@ -9,6 +9,7 @@ import {
   Model,
   NonAttribute,
   Sequelize,
+  NOW,
 } from 'sequelize';
 
 export class History extends Model<
@@ -27,7 +28,7 @@ export class History extends Model<
 
   declare movement: number;
   declare description: string;
-  declare date: Date;
+  declare date: CreationOptional<Date>;
 
   declare getUser: () => User;
   declare getProduct: () => Product;
@@ -42,7 +43,7 @@ export default (sequelize: Sequelize) => {
       date: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: new Date(),
+        defaultValue: NOW,
       },
     },
     { sequelize },

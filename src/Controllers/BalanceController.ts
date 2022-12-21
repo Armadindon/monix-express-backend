@@ -39,7 +39,7 @@ router.post('/buy', authenticateToken, setUser, async (req, res, next) => {
   const userUpdated = await user.update({ balance: user.balance - totalPrice });
   History.create({
     date: new Date(),
-    description: ``,
+    description: `Achat ${productBuyed.name} x ${amount}`,
     movement: -totalPrice,
     ProductId: productId,
     UserId: user.id,
@@ -63,8 +63,7 @@ router.post('/recharge', authenticateToken, setUser, async (req, res, next) => {
   // On update l'utilisateur et on ajoute une entrée dans son historique
   const userUpdated = await user.update({ balance: totalBalance });
   History.create({
-    date: new Date(),
-    description: ``,
+    description: `Rechargement de ${amount} crédits`,
     movement: amount,
     UserId: user.id,
   });
