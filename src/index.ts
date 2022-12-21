@@ -10,6 +10,7 @@ import UserController from './Controllers/UserController';
 import ProductController from './Controllers/ProductsController';
 import BalanceController from './Controllers/BalanceController';
 import HistoryController from './Controllers/HistoryController';
+import cors from 'cors';
 
 import swaggerConfig from './config/swagger.json';
 import { mkdirSync, existsSync } from 'fs';
@@ -76,6 +77,7 @@ sequelize.sync().then(async () => {
 });
 
 // SERVER SETUP
+app.use(cors());
 app.use(express.static('public'));
 if (!existsSync('public/images')) mkdirSync('public/images');
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
