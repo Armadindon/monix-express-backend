@@ -12,6 +12,7 @@ import BalanceController from './Controllers/BalanceController';
 import HistoryController from './Controllers/HistoryController';
 
 import swaggerConfig from './config/swagger.json';
+import { mkdirSync, existsSync } from 'fs';
 
 // Error handlers
 export class AppError extends Error {
@@ -47,15 +48,16 @@ const app: Express = express();
 const port = process.env.PORT;
 
 // DATABASE SETUP
-
 export const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: 'data/db.sqlite',
+  logging: false,
 });
 UserModel(sequelize);
 Product(sequelize);
 History(sequelize);
-sequelize.sync({ force: true }).then(async () => {
+sequelize.sync().then(async () => {
+  // Create admin account if it doesn't exist yet
   const admins = await User.findAll({ where: { admin: true } });
   if (admins.length === 0) {
     console.log("Pas d'admin detecté, création d'un compte admin par défaut");
@@ -73,17 +75,15 @@ sequelize.sync({ force: true }).then(async () => {
   }
 });
 
-// Create admin account if it doesn't exist yet
-
 // SERVER SETUP
 app.use(express.static('public'));
+if (!existsSync('public/images')) mkdirSync('public/images');
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 app.use('/auth', AuthController);
 app.use('/users', UserController);
 app.use('/products', ProductController);
 app.use('/balance', BalanceController);
 app.use('/history', HistoryController);
-
 app.use(errorLogger);
 
 app.listen(port, () => {
