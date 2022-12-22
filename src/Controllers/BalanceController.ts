@@ -7,12 +7,14 @@ import { User } from '../Model/User';
 import { Product } from '../Model/Product';
 import { History } from '../Model/History';
 import { AppError } from '..';
+import dotenv from "dotenv"
+dotenv.config()
 
 const router = Router();
 router.use(json());
 
-const minBalance = +(process.env.MIN_BALANCE as string);
-const maxBalance = +(process.env.MAX_BALANCE as string);
+const minBalance = parseInt(process.env.MIN_BALANCE as string);
+const maxBalance = parseInt(process.env.MAX_BALANCE as string);
 
 router.post('/buy', authenticateToken, setUser, async (req, res, next) => {
   const user = req.user as User;

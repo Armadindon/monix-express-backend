@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../Model/User';
 import { AppError } from '..';
+import dotenv from "dotenv"
+dotenv.config()
 
 /** Utilitary middleware to check if the user is connected */
 export const authenticateToken: RequestHandler = (req, res, next) => {

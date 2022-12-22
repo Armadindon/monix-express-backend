@@ -11,10 +11,10 @@ import ProductController from './Controllers/ProductsController';
 import BalanceController from './Controllers/BalanceController';
 import HistoryController from './Controllers/HistoryController';
 import cors from 'cors';
-
 import swaggerConfig from './config/swagger.json';
 import { mkdirSync, existsSync } from 'fs';
 
+dotenv.config()
 // Error handlers
 export class AppError extends Error {
   statusCode: number;
