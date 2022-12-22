@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import { User } from '../Model/User';
 import { json } from 'express';
 import { AppError } from '..';
-import dotenv from "dotenv"
-dotenv.config()
+import dotenv from 'dotenv';
+dotenv.config();
 
 const router = Router();
 

@@ -7,8 +7,8 @@ import { User } from '../Model/User';
 import { Product } from '../Model/Product';
 import { History } from '../Model/History';
 import { AppError } from '..';
-import dotenv from "dotenv"
-dotenv.config()
+import dotenv from 'dotenv';
+dotenv.config();
 
 const router = Router();
 router.use(json());
