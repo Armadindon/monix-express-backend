@@ -22,6 +22,7 @@ export class User extends Model<
   declare balance: CreationOptional<number>;
   declare avatar: string | null;
   declare admin: CreationOptional<boolean>;
+  declare code: CreationOptional<string>;
   declare histories: NonAttribute<History[]>;
 
   public validPassword(password: string): boolean {
@@ -33,12 +34,13 @@ export default (sequelize: Sequelize) => {
   User.init(
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      username: { type: DataTypes.STRING, allowNull: false },
+      username: { type: DataTypes.STRING, allowNull: false, unique: true },
       email: { type: DataTypes.STRING, allowNull: false },
       password: { type: DataTypes.STRING, allowNull: false, defaultValue: 0 },
       balance: { type: DataTypes.FLOAT, defaultValue: 0 },
       avatar: { type: DataTypes.STRING },
       admin: { type: DataTypes.BOOLEAN, defaultValue: false },
+      code: { type: DataTypes.STRING, unique: true },
     },
     {
       sequelize,
