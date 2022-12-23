@@ -21,7 +21,7 @@ type CleanedUser = Partial<User>;
 /** Clean the user from all the attributes that we don't want to include */
 const cleanUser = (user: User): CleanedUser => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { password: _, ...cleanedUser } = user.dataValues;
+  const { password: _, code: __, ...cleanedUser } = user.dataValues;
   return cleanedUser;
 };
 
@@ -179,6 +179,48 @@ router.post(
     res.status(200).json({
       success: true,
       message: 'Votre mot de passe a bien changé, vous pouvez vous reconnecter',
+    });
+  },
+);
+
+router.post(
+  '/generateCode',
+  authenticateToken,
+  setUser,
+  async (req, res, next) => {
+    const user: User = req.user;
+
+    let codeExist = false;
+    let tries = 0;
+    let code = '';
+
+    // On essaie de créer le code (on limite le nombre d'essais a 20 pour éviter les boucles infinies)
+    while (!codeExist && tries < 20) {
+      code = Math.floor(Math.random() * 1001)
+        .toString()
+        .padStart(4, '0');
+
+      const users_with_code = await User.findOne({ where: { code } });
+
+      codeExist = users_with_code !== null;
+      tries++;
+    }
+
+    if (codeExist) {
+      const err = new AppError(
+        500,
+        "Impossible de créer un code pour l'utilisateur courant",
+      );
+      return next(err);
+    }
+
+    user.update({ code });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        code,
+      },
     });
   },
 );

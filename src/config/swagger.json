@@ -68,6 +68,45 @@
         }
       }
     },
+    "/auth/codeLogin": {
+      "post": {
+        "summary": "Connecte l'utilisateur en utilisant son code personnel",
+        "tags": ["Authentification"],
+        "requestBody": {
+          "description": "Le code d'authentification",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/codeLoginBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "L'utilisateur a ete cree",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/signup": {
       "post": {
         "summary": "Crée un utilisateur",
@@ -431,6 +470,35 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/apiMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/generateCode": {
+      "post": {
+        "summary": "Create a personnal code for the user (connection with code)",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Le code de l'utilisateur à bien été mis à jour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/codeCreationResponse"
                 }
               }
             }
@@ -1020,6 +1088,7 @@
           }
         }
       },
+
       "loginBody": {
         "type": "object",
         "required": ["username", "password"],
@@ -1028,6 +1097,15 @@
             "type": "string"
           },
           "password": {
+            "type": "string"
+          }
+        }
+      },
+      "codeLoginBody": {
+        "type": "object",
+        "required": ["code"],
+        "properties": {
+          "code": {
             "type": "string"
           }
         }
@@ -1046,6 +1124,22 @@
               "userId": { "type": "number" },
               "email": { "type": "string" },
               "token": { "type": "string" }
+            }
+          }
+        }
+      },
+      "codeCreationResponse": {
+        "type": "object",
+        "required": ["success", "data"],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "required": ["code"],
+            "properties": {
+              "code": { "type": "number" }
             }
           }
         }
