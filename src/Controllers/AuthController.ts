@@ -4,6 +4,8 @@ import { User } from '../Model/User';
 import { json } from 'express';
 import { AppError } from '..';
 import dotenv from 'dotenv';
+import { v4 as uuidV4 } from 'uuid';
+import nodemailer from 'nodemailer';
 dotenv.config();
 
 const router = Router();
@@ -134,6 +136,78 @@ router.post('/signup', async (req, res, next) => {
   res.status(201).json({
     success: true,
     data: { userId: newUser.id, email: newUser.email, token: token },
+  });
+});
+
+// Handling post request
+router.post('/forgottenPassword', async (req, res, next) => {
+  const { username } = req.body;
+  const foundUser = await User.findOne({ where: { username } });
+
+  if (foundUser === null) {
+    const error = new AppError(404, 'User not found');
+    return next(error);
+  }
+
+  const newResetCode = uuidV4();
+
+  await foundUser.update({ resetCode: newResetCode });
+
+  const resetUrl = new URL(process.env.FRONT_END_URL || '');
+  resetUrl.searchParams.append('code', newResetCode);
+
+  // On envoie un email
+  console.log(
+    process.env.SMTP_HOST,
+    process.env.SMTP_PORT,
+    process.env.SMTP_USER,
+    process.env.SMTP_PASS,
+  );
+  const mailer = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT as string),
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  await mailer.sendMail({
+    from: `"Monix 2" <${process.env.SMTP_USER}>`,
+    to: foundUser.email,
+    subject: 'Mot de passe Monix oublié',
+    html: `<p>Lien pour le mot de passe oublié ${resetUrl}</p>`,
+    text: `Lien pour le mot de passe oublié ${resetUrl}`,
+  });
+
+  res.status(201).json({
+    success: true,
+    message: 'Lien de reset bien envoyé',
+  });
+});
+
+// Handling post request
+router.post('/resetPassword', async (req, res, next) => {
+  const { code, newPassword, passwordConfirmation } = req.body;
+  const foundUser = await User.findOne({ where: { resetCode: code } });
+
+  if (foundUser === null) {
+    const error = new AppError(404, 'No user found for this reset code');
+    return next(error);
+  }
+
+  if (newPassword !== passwordConfirmation) {
+    const error = new AppError(
+      400,
+      'Le mot de passe et la confirmation ne correspondent pas',
+    );
+    return next(error);
+  }
+
+  foundUser.update({ password: newPassword, resetCode: null });
+  res.status(200).json({
+    success: true,
+    message: 'Votre mot de passe a bien changé, vous pouvez vous reconnecter',
   });
 });
 

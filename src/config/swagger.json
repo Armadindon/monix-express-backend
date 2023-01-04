@@ -146,6 +146,83 @@
         }
       }
     },
+    "/auth/forgottenPassword": {
+      "post": {
+        "summary": "Envoie à l'utilisateur un lien pour reset son mot de passe par mail",
+        "tags": ["Authentification"],
+        "requestBody": {
+          "description": "Utilisateur a qui envoyer un mot de passe",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/forgottenPasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Le mail a bien été envoyé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/resetPassword": {
+      "post": {
+        "summary": "Change the password using the code received by email",
+        "tags": ["Authentification"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/resetPasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "Une erreur a eu lieu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Le mot de passe a bien été changé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apiMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users/": {
       "get": {
         "summary": "Get all users",
@@ -1088,7 +1165,6 @@
           }
         }
       },
-
       "loginBody": {
         "type": "object",
         "required": ["username", "password"],
@@ -1099,6 +1175,24 @@
           "password": {
             "type": "string"
           }
+        }
+      },
+      "forgottenPasswordBody": {
+        "type": "object",
+        "required": ["username"],
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "resetPasswordBody": {
+        "type": "object",
+        "required": ["code", "newPassword", "passwordConfirmation"],
+        "properties": {
+          "code": { "type": "string" },
+          "newPassword": { "type": "string" },
+          "passwordConfirmation": { "type": "string" }
         }
       },
       "codeLoginBody": {
