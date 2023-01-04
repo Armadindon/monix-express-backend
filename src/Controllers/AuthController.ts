@@ -157,12 +157,6 @@ router.post('/forgottenPassword', async (req, res, next) => {
   resetUrl.searchParams.append('code', newResetCode);
 
   // On envoie un email
-  console.log(
-    process.env.SMTP_HOST,
-    process.env.SMTP_PORT,
-    process.env.SMTP_USER,
-    process.env.SMTP_PASS,
-  );
   const mailer = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT as string),
