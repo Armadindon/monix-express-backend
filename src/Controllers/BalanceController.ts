@@ -8,6 +8,7 @@ import { Product } from '../Model/Product';
 import { History } from '../Model/History';
 import { AppError } from '..';
 import dotenv from 'dotenv';
+import { cleanUser } from './UserController';
 dotenv.config();
 
 const router = Router();
@@ -53,6 +54,19 @@ router.post('/recharge', authenticateToken, setUser, async (req, res, next) => {
   const user = req.user as User;
   const { amount } = req.body;
 
+  if (typeof amount !== 'number') {
+    const err = new AppError(400, 'Le montant rechargé doit être un nombre !');
+    return next(err);
+  }
+
+  if (amount < 0) {
+    const err = new AppError(
+      400,
+      'Impossible de recharger un nombre négatif de crédits !',
+    );
+    return next(err);
+  }
+
   const totalBalance = user.balance + amount;
   if (totalBalance > maxBalance) {
     const err = new AppError(
@@ -69,7 +83,7 @@ router.post('/recharge', authenticateToken, setUser, async (req, res, next) => {
     movement: amount,
     UserId: user.id,
   });
-  return res.status(200).json({ success: true, data: userUpdated });
+  return res.status(200).json({ success: true, data: cleanUser(userUpdated) });
 });
 
 export default router;

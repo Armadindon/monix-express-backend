@@ -57,7 +57,7 @@ export const sequelize = new Sequelize({
 UserModel(sequelize);
 Product(sequelize);
 History(sequelize);
-sequelize.sync({ alter: true }).then(async () => {
+sequelize.sync().then(async () => {
   // Create admin account if it doesn't exist yet
   const admins = await User.findAll({ where: { admin: true } });
   if (admins.length === 0) {

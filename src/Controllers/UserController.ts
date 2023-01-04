@@ -19,7 +19,7 @@ router.use(json());
 type CleanedUser = Partial<User>;
 
 /** Clean the user from all the attributes that we don't want to include */
-const cleanUser = (user: User): CleanedUser => {
+export const cleanUser = (user: User): CleanedUser => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, code: __, ...cleanedUser } = user.dataValues;
   return cleanedUser;
@@ -151,6 +151,14 @@ router.post(
   async (req, res, next) => {
     const user: User = req.user;
     const { oldPassword, newPassword, passwordConfirmation } = req.body;
+
+    if (newPassword === '') {
+      const error = new AppError(
+        400,
+        'Merci de rentrer un mot de passe valide !',
+      );
+      return next(error);
+    }
 
     if (newPassword !== passwordConfirmation) {
       const error = new AppError(

@@ -190,6 +190,14 @@ router.post('/resetPassword', async (req, res, next) => {
     return next(error);
   }
 
+  if (newPassword === '') {
+    const error = new AppError(
+      400,
+      'Merci de rentrer un mot de passe valide !',
+    );
+    return next(error);
+  }
+
   if (newPassword !== passwordConfirmation) {
     const error = new AppError(
       400,
