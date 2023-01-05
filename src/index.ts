@@ -15,6 +15,12 @@ import swaggerConfig from './config/swagger.json';
 import { mkdirSync, existsSync } from 'fs';
 
 dotenv.config();
+
+let baseUrl = process.env.BASE_URL || '';
+if (baseUrl.charAt(baseUrl.length - 1) == '/')
+  baseUrl = baseUrl.substring(0, baseUrl.length);
+console.log(baseUrl);
+
 // Error handlers
 export class AppError extends Error {
   statusCode: number;
@@ -84,14 +90,18 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.static('public'));
+app.use(baseUrl, express.static(`public`));
 if (!existsSync('public/images')) mkdirSync('public/images');
-app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
-app.use('/auth', AuthController);
-app.use('/users', UserController);
-app.use('/products', ProductController);
-app.use('/balance', BalanceController);
-app.use('/history', HistoryController);
+app.use(
+  `${baseUrl}/documentation`,
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerConfig),
+);
+app.use(`${baseUrl}/auth`, AuthController);
+app.use(`${baseUrl}/users`, UserController);
+app.use(`${baseUrl}/products`, ProductController);
+app.use(`${baseUrl}/balance`, BalanceController);
+app.use(`${baseUrl}/history`, HistoryController);
 app.use(errorLogger);
 
 app.listen(port, () => {
