@@ -77,7 +77,12 @@ sequelize.sync().then(async () => {
 });
 
 // SERVER SETUP
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  }),
+);
 app.options('*', cors()); // For pre-flight requests
 app.use(express.static('public'));
 if (!existsSync('public/images')) mkdirSync('public/images');
