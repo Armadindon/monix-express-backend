@@ -83,6 +83,7 @@ sequelize.sync().then(async () => {
 });
 
 // SERVER SETUP
+swaggerConfig.servers[0].url = baseUrl;
 app.use(
   cors({
     origin: true,
