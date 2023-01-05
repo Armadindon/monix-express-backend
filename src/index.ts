@@ -78,6 +78,7 @@ sequelize.sync().then(async () => {
 
 // SERVER SETUP
 app.use(cors());
+app.options('*', cors()); // For pre-flight requests
 app.use(express.static('public'));
 if (!existsSync('public/images')) mkdirSync('public/images');
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
