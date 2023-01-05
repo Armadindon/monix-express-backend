@@ -81,9 +81,9 @@ app.use(
   cors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
   }),
 );
-app.options('*', cors()); // For pre-flight requests
 app.use(express.static('public'));
 if (!existsSync('public/images')) mkdirSync('public/images');
 app.use('/documentation', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
