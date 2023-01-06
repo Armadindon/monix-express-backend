@@ -107,39 +107,6 @@ router.post('/codeLogin', async (req, res, next) => {
 });
 
 // Handling post request
-router.post('/signup', async (req, res, next) => {
-  const { username, password, email } = req.body;
-  const newUser = User.build({ username, password, email });
-  try {
-    await newUser.save();
-  } catch {
-    const error = new AppError(
-      400,
-      "Impossible de créer l'utilisateur ! Merci de vérifier vos paramètres",
-    );
-    return next(error);
-  }
-  let token;
-  try {
-    token = jwt.sign(
-      { userId: newUser.id, username: newUser.username, email: newUser.email },
-      process.env.JWT_SECRET as string,
-      { expiresIn: '1h' },
-    );
-  } catch (err) {
-    const error = new AppError(
-      500,
-      'Impossible de créer le token JWT ! Merci de vérifier les paramètres de la requete',
-    );
-    return next(error);
-  }
-  res.status(201).json({
-    success: true,
-    data: { userId: newUser.id, email: newUser.email, token: token },
-  });
-});
-
-// Handling post request
 router.post('/forgottenPassword', async (req, res, next) => {
   const { username } = req.body;
   const foundUser = await User.findOne({ where: { username } });

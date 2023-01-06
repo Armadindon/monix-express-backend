@@ -325,7 +325,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserModification"
+                "$ref": "#/components/schemas/UserModificationMe"
               }
             }
           }
@@ -1271,12 +1271,22 @@
           "admin": { "type": "boolean" }
         }
       },
-      "UserModification": {
+      "UserModificationMe": {
         "type": "object",
         "required": ["username", "email"],
         "properties": {
           "username": { "type": "string" },
           "email": { "type": "string" }
+        }
+      },
+      "UserModification": {
+        "type": "object",
+        "required": ["username", "email", "balance", "admin"],
+        "properties": {
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "balance": { "type": "number" },
+          "admin": { "type": "string" }
         }
       },
       "UserGet": {

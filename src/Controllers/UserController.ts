@@ -81,6 +81,8 @@ router.put('/:id', authenticateToken, isAdmin, async (req, res, next) => {
   const updatedUser = await user.update({
     username: userToSet?.username,
     email: userToSet?.email,
+    admin: userToSet?.admin,
+    balance: userToSet?.balance,
   });
   res.status(200).json({ success: true, data: cleanUser(updatedUser) });
 });

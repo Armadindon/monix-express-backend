@@ -27,6 +27,22 @@ router.post('/buy', authenticateToken, setUser, async (req, res, next) => {
     return next(err);
   }
 
+  if (typeof amount !== 'number') {
+    const err = new AppError(
+      400,
+      'Le nombre de produits achetés doit être un nombre !',
+    );
+    return next(err);
+  }
+
+  if (amount < 0) {
+    const err = new AppError(
+      400,
+      "Impossible d'acheter un nombre négatif de produits !",
+    );
+    return next(err);
+  }
+
   //TODO: Mettre en place un warning si le produit n'as pas assez de stock
 
   const totalPrice = productBuyed.price * amount;
