@@ -7,7 +7,6 @@ import {
 } from '../Services/AuthentificationServices';
 import { v4 as uuidV4 } from 'uuid';
 import fs from 'fs';
-import path from 'path';
 import { AppError } from '..';
 
 const router = Router();
@@ -96,7 +95,8 @@ router.post(
     }
 
     const tempPath = req.file.path;
-    const fileNameTarget = uuidV4() + '.png';
+    const fileNameTarget =
+      uuidV4() + '.' + req.file?.originalname.split('.').pop();
     const targetPath = 'public/images/' + fileNameTarget;
 
     // Si l'utilisateur avait une image, on supprime l'ancienne
@@ -108,7 +108,8 @@ router.post(
     }
 
     if (
-      path.extname(req.file?.originalname as string).toLowerCase() === '.png'
+      req.file?.mimetype === 'image/png' ||
+      req.file?.mimetype === 'image/jpeg'
     ) {
       fs.rename(tempPath, targetPath, async (err) => {
         if (err) return next(err);
@@ -120,9 +121,10 @@ router.post(
       fs.unlink(tempPath, (err) => {
         if (err) return next(err);
 
-        res
-          .status(403)
-          .json({ success: false, error: 'Seulement les png sont autorisés' });
+        res.status(403).json({
+          success: false,
+          error: 'Seulement les png/jpeg sont autorisés',
+        });
       });
     }
   },
