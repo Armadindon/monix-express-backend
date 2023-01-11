@@ -108,45 +108,6 @@
         }
       }
     },
-    "/auth/signup": {
-      "post": {
-        "summary": "Crée un utilisateur",
-        "tags": ["Authentification"],
-        "requestBody": {
-          "description": "L'utilisateur a créer'",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/userCreation"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "Une erreur a eu lieu",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiError"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "L'utilisateur a ete cree",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/loginResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/auth/forgottenPassword": {
       "post": {
         "summary": "Envoie à l'utilisateur un lien pour reset son mot de passe par mail",
