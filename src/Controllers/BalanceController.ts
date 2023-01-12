@@ -70,6 +70,11 @@ router.post(
       return next(err);
     }
 
+    // Update the product for the stocks
+    await productBuyed.update({
+      stock: Math.max(productBuyed.stock - amount, 0),
+    });
+
     // On update l'utilisateur et on ajoute une entrée dans son historique
     const userUpdated = await user.update({
       balance: user.balance - totalPrice,
