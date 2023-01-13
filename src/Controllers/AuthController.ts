@@ -72,7 +72,7 @@ router.post(
           email: existingUser.email,
         },
         process.env.JWT_SECRET as string,
-        { expiresIn: '1h' },
+        { expiresIn: '30d' },
       );
     } catch (err) {
       const error = new AppError(
@@ -137,7 +137,7 @@ router.post(
           email: existingUser.email,
         },
         process.env.JWT_SECRET as string,
-        { expiresIn: '1h' },
+        { expiresIn: '30d' },
       );
     } catch (err) {
       const error = new AppError(
