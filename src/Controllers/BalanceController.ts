@@ -79,7 +79,7 @@ router.post(
     const userUpdated = await user.update({
       balance: user.balance - totalPrice,
     });
-    History.create({
+    await History.create({
       date: new Date(),
       description: `Achat ${productBuyed.name} x ${amount}`,
       movement: -totalPrice,

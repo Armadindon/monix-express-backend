@@ -50,17 +50,9 @@ export default (sequelize: Sequelize) => {
   );
 
   // Creations of the associations
-  User.hasMany(History, {
-    sourceKey: 'id',
-    foreignKey: 'ProductId',
-    as: 'user',
-  });
+  User.hasMany(History);
   History.belongsTo(User);
 
-  Product.hasMany(History, {
-    sourceKey: 'id',
-    foreignKey: 'UserId',
-    as: 'product',
-  });
+  Product.hasMany(History);
   History.belongsTo(Product);
 };

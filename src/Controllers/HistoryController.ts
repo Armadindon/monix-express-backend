@@ -64,7 +64,10 @@ const historySchema = {
 };
 
 router.get('/', authenticateToken, isAdmin, async (req, res) => {
-  const histories = await History.findAll({ include: [Product, User] });
+  const histories = await History.findAll({
+    include: [Product, User],
+    limit: 1000,
+  });
   res.status(200).json({ success: true, data: histories });
 });
 
