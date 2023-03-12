@@ -67,6 +67,7 @@ router.get('/', authenticateToken, isAdmin, async (req, res) => {
   const histories = await History.findAll({
     include: [Product, User],
     limit: 1000,
+    order: [['date', 'DESC']],
   });
   res.status(200).json({ success: true, data: histories });
 });
@@ -96,6 +97,7 @@ router.get('/myHistory/', authenticateToken, async (req, res) => {
   const histories = await History.findAll({
     where: { UserId: req.userId },
     include: [Product],
+    order: [['date', 'DESC']],
   });
   res.status(200).json({ success: true, data: histories });
 });
