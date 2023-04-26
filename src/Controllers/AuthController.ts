@@ -197,10 +197,13 @@ router.post(
     const mailer = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT as string),
-      secure: process.env.SECURE_MAIL === 'true',
+      secure: (process.env.SMTP_USE_SSL ?? 'true') === 'true',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
+      },
+      tls: {
+        rejectUnauthorized: (process.env.SMTP_CHECK_CERT ?? 'true') === 'true',
       },
     });
 
